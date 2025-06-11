@@ -5,6 +5,12 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 
+const getBooks = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(books), 500); // Simulate network delay
+    });
+  };
+
 public_users.post("/register", (req,res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -26,20 +32,21 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/', async function (req, res) {
-  res.send(JSON.stringify(await {books}, null, 4))
+  res.send(JSON.stringify(await getBooks(), null, 4))
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
-  res.send(await books[isbn]);
+  res.send(await getBooks()[isbn]);
  });
   
 // Get book details based on author
 public_users.get('/author/:author', async function (req, res) {
     const author = req.params.author;
     let filteredBooks = [];
-    await Object.values(books).forEach(value => {
+    const booksList = await getBooks();
+    Object.values(booksList).forEach(value => {
         if(value.author === author) {
             filteredBooks.push(value);
         }
@@ -52,7 +59,8 @@ public_users.get('/author/:author', async function (req, res) {
 public_users.get('/title/:title', async function (req, res) {
     const title = req.params.title;
     let filteredBooks = [];
-    await Object.values(books).forEach(value => {
+    const booksList = await getBooks();
+    Object.values(booksList).forEach(value => {
         if(value.title === title) {
             filteredBooks.push(value);
         }
