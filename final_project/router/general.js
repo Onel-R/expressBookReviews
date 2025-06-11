@@ -7,7 +7,7 @@ const public_users = express.Router();
 
 const getBooks = () => {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(books), 500); // Simulate network delay
+      setTimeout(() => resolve(books), 1000); // Simulate network delay
     });
   };
 
@@ -38,7 +38,8 @@ public_users.get('/', async function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn', async function (req, res) {
   const isbn = req.params.isbn;
-  res.send(await getBooks()[isbn]);
+  const booksList = await getBooks();
+  res.send(booksList[isbn]);
  });
   
 // Get book details based on author
