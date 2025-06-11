@@ -5,11 +5,10 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 
-const getBooks = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(books), 1000); // Simulate network delay
+const getBooks = 
+    new Promise((resolve) => {
+      setTimeout(() => { resolve(books) }, 10000); // Simulate network delay
     });
-  };
 
 public_users.post("/register", (req,res) => {
     const username = req.body.username;
@@ -32,42 +31,51 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/', async function (req, res) {
-  res.send(JSON.stringify(await getBooks(), null, 4))
+    //getBooks.then((booksList) => {
+      //  res.send(JSON.stringify(booksList, null, 4));
+    //})
+    const data = await new Promise((resolve) => {
+        //const booksList = Object.values[books];
+        resolve(books); // Simulate network delay
+      }, 100000).then((booksList) => {
+            res.send(JSON.stringify(booksList, null, 4));
+        });
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn', async function (req, res) {
-  const isbn = req.params.isbn;
-  const booksList = await getBooks();
-  res.send(booksList[isbn]);
+public_users.get('/isbn/:isbn', function (req, res) {
+    const isbn = req.params.isbn;
+    getBooks.then((booksList) => {
+        res.send(booksList[isbn]);
+  })
  });
   
 // Get book details based on author
-public_users.get('/author/:author', async function (req, res) {
+public_users.get('/author/:author', function (req, res) {
     const author = req.params.author;
     let filteredBooks = [];
-    const booksList = await getBooks();
-    Object.values(booksList).forEach(value => {
-        if(value.author === author) {
-            filteredBooks.push(value);
-        }
-      });
-
-    res.send(filteredBooks);
+    getBooks.then((booksList) => {
+        Object.values(booksList).forEach(value => {
+            if(value.author === author) {
+                filteredBooks.push(value);
+            }
+        });
+        res.send(filteredBooks);
+    })
 });
 
 // Get all books based on title
-public_users.get('/title/:title', async function (req, res) {
+public_users.get('/title/:title', function (req, res) {
     const title = req.params.title;
     let filteredBooks = [];
-    const booksList = await getBooks();
-    Object.values(booksList).forEach(value => {
-        if(value.title === title) {
-            filteredBooks.push(value);
-        }
-      });
-
-    res.send(filteredBooks);
+    getBooks.then((booksList) => {
+        Object.values(booksList).forEach(value => {
+            if(value.title === title) {
+                filteredBooks.push(value);
+            }
+        });
+        res.send(filteredBooks);
+    })
 });
 
 //  Get book review
